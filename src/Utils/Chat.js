@@ -7,10 +7,16 @@ return msgReceiver
 }
 // Function to handle Socket.IO logic
 function handleSocketIO(server) {
-    const io = socketIO(server);
+    const io = socketIO(server, {
+        cors: {
+            origin: "http://localhost:5173", // Replace with your frontend URL
+            methods: ["GET", "POST"],
+            allowedHeaders: ["my-custom-header"],
+            credentials: true
+        }});
 
     io.on('connection', async(socket) => {
-        console.log('A user connected');
+        console.log(`${socket.id} connected`);
         // Load chat history when a user connects
         // const chatHistory = await Chat.find().sort({ timestamp: -1 }).limit(50).exec();
         // socket.emit('chat history', chatHistory);
@@ -23,7 +29,7 @@ function handleSocketIO(server) {
         if(!session){
         throw new Error('No user found')
         }
-        io.to(session.socketId).emit('private chat', emitmessage(from,message,to));
+        io.to(to).emit('private chat', {from, to, message});
         });
         socket.on('disconnect', () => {
             console.log('User disconnected');

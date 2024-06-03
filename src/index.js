@@ -21,12 +21,11 @@ App.use(passport.initialize());
 App.use(oauthRoutes)
 App.use(otpRoutes)
 handleSocketIO(server);
-console.log(process.on)
 const startServer = async () => {
     try {
         await mongodb();
         console.log("connected")
-        App.listen(port, () => console.log(`port is running on ${port}`))
+        server.listen(port, () => console.log(`port is running on ${port}`))
     } catch (error) {
         console.log(error)
     }
