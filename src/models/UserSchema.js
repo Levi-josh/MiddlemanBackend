@@ -50,15 +50,10 @@ email:{
     unique: true,
 },
 socketId:String,
-username: {
-    type: String,
-    required: [true, 'Enter a username'],
-    unique: true,
-},
+username: String,
 password: {
     type: String,
     required: [true, 'Enter a password'],
-    minlength: [6, 'password must be more than 6 characters'],
    
 },
 chats:[chatSchema],
