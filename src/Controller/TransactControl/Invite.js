@@ -1,4 +1,5 @@
 const users = require('../../models/UserSchema')
+const crypto = require('crypto');
 const createTransactionDetails = (transactionWithId,token) => ({
   transactionWith: transactionWithId,
   transactionToken:token,
@@ -35,11 +36,11 @@ const chatdetails = (user) => ({
 const sendInvite = async(req,res,next)=>{
   const {userid,myid} = req.body
   let check = true
-  const generatedToken = ''//generate id
+  const generatedToken = crypto.randomUUID()
+  console.log(generatedToken)
   try {
   const inviter = await users.findOne({_id:myid})
     const mydetails = {
-      userId:inviter._id,
       accept:false,
       reject:false,
       username:inviter.username,
@@ -47,24 +48,28 @@ const sendInvite = async(req,res,next)=>{
       profilePic:inviter.profilePic,
       socketId:inviter.socketId
   }
-  const invitedUser = await users.findOneAndUpdate({_id:userid},{$push:{notification:mydetails}})
-  const choice = invitedUser.notification.filter(prev=>prev.userId && prev.userId == mydetails._id)
-
+ await users.findOneAndUpdate({_id:userid},{$push:{notification:mydetails}})
   while (check) {
-    if (choice[0].accept) {
-      await users.updateOne({_id:mydetails._id},{$push:{chats:chatdetails(invitedUser)}})
-      await users.updateOne({_id:userid},{$push:{chats:chatdetails(mydetails)}})
+    const inviteduser = await users.findOne({_id:userid})
+    const choice = inviteduser.notification.filter(prev=>prev.username == inviter.username)
+    console.log(choice)
+    if (choice[0]?.accept) {
+      await users.updateOne({_id:inviter._id},{$push:{chats:chatdetails(inviteduser)}})
+      await users.updateOne({_id:userid},{$push:{chats:chatdetails(inviter)}})
       // push to transaction also
-      await users.updateOne({_id:mydetails._id},{$push:{transaction:createTransactionDetails(invitedUser._id,generatedToken)}})
-      await users.updateOne({_id:userid},{$push:{transaction:createTransactionDetails(mydetails._id,generatedToken)}})
+      await users.updateOne({_id:inviter._id},{$push:{transaction:createTransactionDetails(inviteduser._id,generatedToken)}})
+      await users.updateOne({_id:userid},{$push:{transaction:createTransactionDetails(inviter._id,generatedToken)}})
       check = false
+      res.status(200).json({"message":'invite accepted'})
     }
-    if (choice[0].reject) {
-      await users.updateOne({_id:mydetails._id},{$push:{notification:`${invitedUser.username} rejected your invite`}})
+    if (choice[0]?.reject) {
+      await users.updateOne({_id:inviter._id},{$push:{notification:`${invitedUser.username} rejected your invite`}})
       check = false
+      res.status(200).json({"message":'invite rejected'})
     }
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 10000));
   } 
+  res.status(200).json({"message":'invite sent'})
   } catch (err) {
     next(err)
   }
@@ -76,6 +81,7 @@ const acceptInvite = async(req,res,next)=>{
     const mydetails = await users.findOne({_id:myid})
     const decide = mydetails.notification.find(prev=>prev._id == noteId)
     await users.updateOne({'notification._id':noteId},{$set:{'notification.$.accept':!decide.accept}})
+    res.status(200).json({"message":'done'})
   } catch (err) {
     next(err)
   }
@@ -92,8 +98,10 @@ const rejectInvite = async(req,res,next)=>{
 }
 const searchInvite = async(req,res,next)=>{
   const {inviteCode} = req.body
+  console.log(inviteCode)
   try {
     const invitedUser = await users.findOne({inviteCode})
+    console.log(invitedUser)
     if(!invitedUser){
       throw new Error('No user with that invitecode is found')
     }

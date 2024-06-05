@@ -7,6 +7,12 @@ const messageSchema = new mongoose.Schema({
     message: String,
     timestamp: { type: Date, default: Date.now }
 });
+const noteSchema = new mongoose.Schema({
+    note:String,
+    accept:Boolean,
+    reject:Boolean,
+    username:String
+});
 const buyOrsellOptions = new mongoose.Schema({
     options:String,
     choosen:Boolean
@@ -62,10 +68,9 @@ pending:Number,
 profilePic:String,
 inviteCode:String,
 walletId:String,
-notification:[],
+notification:[noteSchema],
 history:[],
 transaction:[userTransaction ]
-
 
 })
 

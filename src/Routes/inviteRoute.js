@@ -6,3 +6,5 @@ route.route("/searchInvite").get(searchInvite);
 route.route("/rejectInvite").put(rejectInvite);
 route.route("/acceptInvite").put(acceptInvite);
 route.route("/sendInvite").post(sendInvite);
+
+module.exports = route;
