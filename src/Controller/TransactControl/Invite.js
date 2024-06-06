@@ -32,48 +32,6 @@ const chatdetails = (user) => ({
     profilePic:user.profilePic,
 })
 
-
-// const sendInvite = async(req,res,next)=>{
-//   const {userid,myid} = req.body
-//   let check = true
-//   const generatedToken = crypto.randomUUID()
-//   console.log(generatedToken)
-//   try {
-//   const inviter = await users.findOne({_id:myid})
-//     const mydetails = {
-//       accept:false,
-//       reject:false,
-//       username:inviter.username,
-//       note:`You have been invited by ${inviter.username} for a business transaction`,
-//       profilePic:inviter.profilePic,
-//       socketId:inviter.socketId
-//   }
-//  await users.findOneAndUpdate({_id:userid},{$push:{notification:mydetails}})
-//   while (check) {
-//     const inviteduser = await users.findOne({_id:userid})
-//     const choice = inviteduser.notification.filter(prev=>prev.username == inviter.username)
-//     console.log(choice)
-//     if (choice[0]?.accept) {
-//       await users.updateOne({_id:inviter._id},{$push:{chats:chatdetails(inviteduser)}})
-//       await users.updateOne({_id:userid},{$push:{chats:chatdetails(inviter)}})
-//       // push to transaction also
-//       await users.updateOne({_id:inviter._id},{$push:{transaction:createTransactionDetails(inviteduser._id,generatedToken)}})
-//       await users.updateOne({_id:userid},{$push:{transaction:createTransactionDetails(inviter._id,generatedToken)}})
-//       check = false
-//       res.status(200).json({"message":'invite accepted'})
-//     }
-//     if (choice[0]?.reject) {
-//       await users.updateOne({_id:inviter._id},{$push:{notification:`${invitedUser.username} rejected your invite`}})
-//       check = false
-//       res.status(200).json({"message":'invite rejected'})
-//     }
-//     await new Promise(resolve => setTimeout(resolve, 10000));
-//   } 
-//   res.status(200).json({"message":'invite sent'})
-//   } catch (err) {
-//     next(err)
-//   }
-// }
 const sendInvite = async (req, res, next) => {
     const { userid, myid } = req.body;
     const generatedToken = crypto.randomUUID();
