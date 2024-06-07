@@ -27,10 +27,11 @@ function handleSocketIO(server) {
 
             // Find the recipient's session using customId
             const recipient = await user.findOne({ _id: to });
+            const sender = await user.findOne({ _id: from });
 
             if (recipient && recipient.socketId) {
                 io.to(recipient.socketId).emit('private chat', { from, to, message });
-                io.to(socket.id).emit('private chat', { from, to, message }); // Also send the message back to the sender
+                io.to(sender.socketId).emit('private chat', { from, to, message }); // Also send the message back to the sender
             } else {
                 console.log(`Recipient ${to} is not currently connected.`);
                 // Handle the case when the recipient is not connected
