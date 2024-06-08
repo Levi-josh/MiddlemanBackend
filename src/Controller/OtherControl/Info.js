@@ -9,4 +9,14 @@ try {
 }
 }
 
-module.exports = {getUsers}
+const getMessages = async(req,res,next ) => {
+    try {
+        const user = await users.findOne({'chats._id':req.params.id})
+        const messages = user.chats.filter(prev=>prev._id == req.params.id)
+        res.status(200).json(messages[0].messages)   
+    } catch (err) {
+       next(err) 
+    }
+    }
+
+module.exports = {getUsers,getMessages}
