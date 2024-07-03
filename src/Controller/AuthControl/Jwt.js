@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const otpUsers = require('../../models/otpUsers')
 const users = require('../../models/UserSchema')
 
 const login = async (req, res, next) => {

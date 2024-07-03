@@ -1,4 +1,6 @@
 const users = require('../../models/UserSchema')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const { ObjectId } = require('mongodb');
 const createTransactionDetails = (transactionWithId,option,token) => ({
   transactionWith: transactionWithId,
@@ -75,30 +77,48 @@ const verifyPickup = async(req,res,next) => {
      const isThirdParty = receiver.buyOrSell.find(prev=>prev.options == 'buyThirdParty')
      const isbuyer = receiver.buyOrSell.find(prev=>prev.options == 'Buyer')
      if(isThirdParty.choosen){
-      //check if the password matches with the thirdparty password else throw error 'wrong password'
       const thirdparty = await users.findOne({_id:userId})
-      //password checking is gonna be jwt.compare tho
-      const authorized = thirdparty.password == password
-      if (authorized){
-      //change completed to true
-      }
-      throw new Error('Wrong password')
-     }
-     if(isbuyer.choosen){
-      //check if the password matches with the buyer password else throw error 'wrong password'
-      const buyer = await users.findOne({_id:userId})
-      //password checking is gonna be jwt.compare tho
-      const authorized = buyer.password == password
-      if (authorized){
-      //change completed to true
-      }
-      throw new Error('Wrong password')
-     }
-     throw new Error('This is not the password of the receiver')
-
-    } catch (err) {
-       next(err) 
+    if (thirdparty) {
+        const hash = await bcrypt.compare(password, thirdparty.password)
+        if (hash) {
+          for (let dealer of deal) {
+            const updateselect = {
+              $set: {
+                'transaction.completed':!dealer.completed
+              },
+            };
+            await users.updateOne({ 'transaction.transactionToken':transactionToken }, updateselect);
+          }
+          res.status(200).json({'message':'transaction completed',})
+        } else {
+            throw new Error('incorrect password')
+        }
+    } else {
+        throw new Error('there is no user with that name')
     }
+    if(isbuyer.choosen){
+      const buyer = await users.findOne({_id:userId})
+      if(buyer){
+        const hash = await bcrypt.compare(password, buyer.password)
+        if (hash) {
+          for (let dealer of deal) {
+            const updateselect = {
+              $set: {
+                'transaction.completed':!dealer.completed
+              },
+            };
+            await users.updateOne({ 'transaction.transactionToken':transactionToken }, updateselect);
+          }
+          res.status(200).json({'message':'transaction completed',})
+        } else {
+            throw new Error('incorrect password')
+        }
+      }
+      else{throw new Error('This is not the password of the receiver')}
+    }
+  }
+}
+catch (err) {next(err)}
 }
 
 module.exports = {verifyPickup,pickupMethod,deliveryMethod }
