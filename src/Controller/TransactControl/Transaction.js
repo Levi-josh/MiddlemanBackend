@@ -52,13 +52,6 @@ const chooseOption = async(req,res,next)=>{
     next(err)
   }
 }
-const buyerDetails = async(req,res,next)=>{
-  const {userid,myid,userAddress} = req.body
-  try {
 
-  } catch (err) {
-    next(err)
-  }
-}
 
-module.exports = {buyerOrSeller,sellerDetails,buyerDetails,chooseOption}
+module.exports = {buyerOrSeller,sellerDetails,chooseOption}

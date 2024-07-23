@@ -46,6 +46,7 @@ function handleSocketIO(server) {
       await user.findOneAndUpdate({ _id: customId }, { socketId: socket.id }, { upsert: true });
     });
     socket.on('private chat', async (data) => {
+      console.log(data)
       const { from, to, message } = data;
       const chatdetails = {
         from,

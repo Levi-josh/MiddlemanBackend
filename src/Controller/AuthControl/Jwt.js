@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
 }
 const logout = async (req, res, next) => {
     try {
-    const newjwt = jwt.sign({ _id: req.body.id }, process.env.Access_Token, { expiresIn: '2s' })
+    const newjwt = jwt.sign({ _id: req.params.id}, process.env.Access_Token, { expiresIn: '2s' })
     res.status(200).json(newjwt)    
     } catch (err) {
         next(err)
