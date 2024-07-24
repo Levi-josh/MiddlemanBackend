@@ -13,8 +13,8 @@ const infoRoutes = require('./Routes/InfoRoutes')
 const http = require('http')
 const server = http.createServer(App);
 const handleSocketIO = require('./Utils/Chat');
-
-
+const fs = require('fs');
+const path = require('path');
 
 App.use(cors({origin:'http://localhost:5173'}))
 App.use(express.json())
@@ -24,6 +24,10 @@ App.use(oauthRoutes)
 App.use(otpRoutes)
 App.use(inviteRoutes)
 App.use(infoRoutes)
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
+App.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 handleSocketIO(server);
 const startServer = async () => {
     try {
