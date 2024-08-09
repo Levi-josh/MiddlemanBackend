@@ -1,11 +1,11 @@
 const axios = require('axios');
 
 const checkGoogleAccessToken = async (req, res, next) => {
-    // const accessToken = req.headers.authorization;
+    const accessToken = req.headers.authorization;
   
-    // if (!accessToken) {
-    //   return res.status(401).json({ message: 'Access token is missing' });
-    // }
+    if (!accessToken) {
+      return res.status(401).json({ message: 'Access token is missing' });
+    }
   
     try {
       // Make a request to Google's token info endpoint to validate the access token
