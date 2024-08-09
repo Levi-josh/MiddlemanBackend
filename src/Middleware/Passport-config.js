@@ -4,8 +4,8 @@ const OAuth2Strategy = require('passport-oauth2').Strategy;
 
 // Define OAuth2 strategy configuration
 passport.use('google', new OAuth2Strategy ({
-    clientID: 'your_google_client_id',
-    clientSecret: 'your_google_client_secret',
+    clientID: process.env.clientID,
+    clientSecret: process.env.clientSecret,
     callbackURL: 'http://localhost:3500/auth/google/callback',
     authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
     tokenURL: 'https://accounts.google.com/o/oauth2/token'
