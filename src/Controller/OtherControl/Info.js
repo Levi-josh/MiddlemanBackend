@@ -22,13 +22,13 @@ try {
 }
 const postPfp= async (req, res, next) => { 
     try {
-      const{id,Username} = req.body; // Extract text from the form
+      const{id,username} = req.body; // Extract text from the form
       const imageUrl = req.file.filename
       const items={
      profilePic:`/uploads/${imageUrl}`,
-      Username,
+      username,
       }  
-    await users.updateOne({_id:id},{$push:items}); 
+    await users.updateOne({_id:id},{$set:items}); 
       res.json({ message: `/uploads/${imageUrl}`});
     } catch (err) {
     next(err)

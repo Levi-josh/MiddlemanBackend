@@ -111,15 +111,15 @@ const rejectInvite = async(req,res,next)=>{
   } 
 }
 const searchInvite = async(req,res,next)=>{
-  const {inviteCode} = req.body
-  console.log(inviteCode)
+  const {id} = req.params
+  console.log(id)
   try {
-    const invitedUser = await users.findOne({inviteCode})
+    const invitedUser = await users.findOne({inviteCode:id})
     console.log(invitedUser)
     if(!invitedUser){
       throw new Error('No user with that invitecode is found')
     }
-    res.status(200).json({username:invitedUser.username,_id:invitedUser._id,profilePic:invitedUser.profilePic})
+    res.status(200).json({username:invitedUser.username,id:invitedUser._id,profilePic:invitedUser.profilePic})
   } catch (err) {
     next(err)
   }
