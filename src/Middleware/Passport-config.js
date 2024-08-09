@@ -11,6 +11,9 @@ passport.use('google', new OAuth2Strategy ({
     tokenURL: 'https://accounts.google.com/o/oauth2/token'
   },
   function(accessToken, refreshToken, profile, done) {
+    console.log(accessToken)
+    console.log(refreshToken)
+    console.log(profile)
     // OAuth callback logic
     // This function is called after the user authorizes access
     // You can handle the user's profile data here
