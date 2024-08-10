@@ -6,7 +6,7 @@ const OAuth2Strategy = require('passport-oauth2').Strategy;
 passport.use('google', new OAuth2Strategy ({
     clientID: process.env.clientID,
     clientSecret: process.env.clientSecret,
-    callbackURL: 'http://localhost:3500/auth/google/callback',
+    callbackURL: 'https://middlemanbackend.onrender.com/auth/google/callback',
     authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
     tokenURL: 'https://accounts.google.com/o/oauth2/token'
   },
