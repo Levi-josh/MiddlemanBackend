@@ -4,19 +4,19 @@ const users = require('../../models/UserSchema')
 
 const login = async (req, res, next) => {
     try {
-        const myusers = await users.findOne({
-            'username': req.body.username
+        const user = await users.findOne({
+            email: req.body.email
         })
-        if (myusers) {
-            const hash = await bcrypt.compare(req.body.password, myusers.password)
+        if (user) {
+            const hash = await bcrypt.compare(req.body.password,user.password)
             if (hash) {
-                const newjwt = jwt.sign({ _id: myusers._id }, process.env.Access_Token,{ expiresIn: '2 days' })
-                res.status(200).json({'Accesss_Token':newjwt,'UserId':myusers._id})
+                const newjwt = jwt.sign({ _id: user._id }, process.env.Access_Token,{ expiresIn: '2 days' })
+                res.status(200).json({'Accesss_Token':newjwt,'UserId':user._id})
             } else {
-                throw new Error('incorrect password')
+                throw new Error('Incorrect password')
             }
         } else {
-            throw new Error('there is no user with that name')
+            throw new Error(`User doesn't exist`)
         }
     } catch (err) {
         next(err)

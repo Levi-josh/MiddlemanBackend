@@ -1,13 +1,26 @@
 const users = require('../../models/UserSchema')
 
 const searchWallet = async(req,res,next)=>{
-    const {walletid} = req.body
+    const walletid = req.params.id
     try {
       const seachedUser = await users.findOne({walletid})
       if(!seachedUser){
         throw new Error('No user with that invitecode is found')
       }
       res.status(200).json({username:seachedUser.username,_id:seachedUser._id,profilePic:seachedUser.profilePic})
+    } catch (err) {
+      next(err)
+    }
+  }
+const deposit = async(req,res,next)=>{
+    const {amount,userId} = req.body
+    try {
+      const seachedUser = await users.findOne({_id:userId})
+      if(!seachedUser){
+        throw new Error('No user found!')
+      }
+      await users.updateOne({ _id: userId }, { $inc: { balance: amount } });
+      res.status(200).json({message:'deposited'})
     } catch (err) {
       next(err)
     }
@@ -36,25 +49,25 @@ const searchWallet = async(req,res,next)=>{
 //   }
 // }
 const makePayment = async (req, res, next) => {
-  const { amount, userId, otherUserId } = req.body;
+  const { amount, userId, recipientId } = req.body;
   try {
-      const receiver = await users.findOne({ _id: otherUserId });
+      const receiver = await users.findOne({ _id: recipientId });
       if (!receiver) {
           return res.status(404).json({ message: 'Receiver not found' });
       }
       const hasDeal = receiver.transaction.find(prev => prev.transactionWith == userId);
       if (!hasDeal) {
-          await users.updateOne({ _id: otherUserId }, { $inc: { balance: amount } });
+          await users.updateOne({ _id: recipientId }, { $inc: { balance: amount } });
       }
-      await users.updateOne({ _id: otherUserId }, { $inc: { pending: amount } });
+      await users.updateOne({ _id: recipientId }, { $inc: { pending: amount } });
 
       // Polling function to check for transaction completion
       const pollForCompletion = async () => {
           while (true) {
-              const updatedReceiver = await users.findOne({ _id: otherUserId });
+              const updatedReceiver = await users.findOne({ _id: recipientId });
               const updatedDeal = updatedReceiver.transaction.find(prev => prev.transactionWith == userId);
               if (updatedDeal && updatedDeal.completed) {
-                  await users.updateOne({ _id: otherUserId }, { $inc: { balance: amount, pending: -amount } });
+                  await users.updateOne({ _id: recipientId }, { $inc: { balance: amount, pending: amount } });
                   return { message: 'Payment completed and balance updated' };
               }
               await new Promise(resolve => setTimeout(resolve, 1000)); // Polling every 1 second
@@ -67,4 +80,4 @@ const makePayment = async (req, res, next) => {
   }
 };
 
-module.exports = {makePayment,searchWallet}
+module.exports = {makePayment,searchWallet,deposit}

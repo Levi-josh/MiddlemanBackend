@@ -20,6 +20,36 @@ try {
     next(err) 
 }
 }
+const getNotification = async(req,res,next ) => {
+try {
+    const user = await users.findById(req.params.id1)
+    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
+    console.log(mymessages)
+    res.status(200).json(mymessages[0]?.messages)   
+} catch (err) {
+    next(err) 
+}
+}
+const getCustomers = async(req,res,next ) => {
+try {
+    const user = await users.findById(req.params.id1)
+    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
+    console.log(mymessages)
+    res.status(200).json(mymessages[0]?.messages)   
+} catch (err) {
+    next(err) 
+}
+}
+const getHistory = async(req,res,next ) => {
+try {
+    const user = await users.findById(req.params.id1)
+    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
+    console.log(mymessages)
+    res.status(200).json(mymessages[0]?.messages)   
+} catch (err) {
+    next(err) 
+}
+}
 const postPfp= async (req, res, next) => { 
     try {
       const{id,username} = req.body; // Extract text from the form
@@ -35,4 +65,4 @@ const postPfp= async (req, res, next) => {
     }
   }
 
-module.exports = {getUsers,getMessages,postPfp}
+module.exports = {getUsers,getMessages,postPfp,getNotification,getHistory,getCustomers }
