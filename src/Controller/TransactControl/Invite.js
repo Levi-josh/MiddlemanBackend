@@ -90,22 +90,25 @@ const sendInvite = async (req, res, next) => {
     }
 };
 const acceptInvite = async(req,res,next)=>{
-  const {myid,noteId} = req.body
+  const noteId = req.params.id1
+  const myid = req.params.id2
   try {
     const mydetails = await users.findOne({_id:myid})
     const decide = mydetails.notification.find(prev=>prev._id == noteId)
     await users.updateOne({'notification._id':noteId},{$set:{'notification.$.accept':!decide.accept}})
-    res.status(200).json({"message":'done'})
+    res.status(200).json({message:'done'})
   } catch (err) {
     next(err)
   }
 }
 const rejectInvite = async(req,res,next)=>{
-  const {myid,noteId} = req.body
+  const noteId = req.params.id1
+  const myid = req.params.id2
   try {
   const mydetails = await users.findOne({_id:myid})
   const decide = mydetails.notification.find(prev=>prev._id == noteId)
   await users.updateOne({'notification._id':noteId},{$set:{'notification.$.reject':!decide.reject}})
+  res.status(200).json({message:'done'})
   } catch (err) {
     next(err)
   } 

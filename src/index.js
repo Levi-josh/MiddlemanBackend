@@ -16,7 +16,7 @@ const handleSocketIO = require('./Utils/Chat');
 const fs = require('fs');
 const path = require('path');
 
-App.use(cors({origin:'http://localhost:5173'}))
+App.use(cors({origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com']}))
 App.use(express.json())
 App.use(bodyparser.json())
 App.use(passport.initialize());

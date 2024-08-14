@@ -35,7 +35,10 @@ const chatSchema = new mongoose.Schema({
     profilePic:String,
 })
 const userTransaction = new mongoose.Schema({
-    transactionWith:String,
+    transactionWith:{
+        username:String,
+        pic:String
+    },
     transactionToken:String,
     buyOrSell:[buyOrsellOptions],
     // thirdpartyInvite:String,optional
@@ -69,7 +72,6 @@ profilePic:String,
 inviteCode:String,
 walletId:String,
 notification:[noteSchema],
-history:[],
 transaction:[userTransaction ]
 
 })

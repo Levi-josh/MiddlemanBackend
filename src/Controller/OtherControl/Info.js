@@ -22,30 +22,36 @@ try {
 }
 const getNotification = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id1)
-    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
-    console.log(mymessages)
-    res.status(200).json(mymessages[0]?.messages)   
+    const user = await users.findById(req.params.id)
+    const notifications = user.notification
+    res.status(200).json({message:notifications})   
 } catch (err) {
     next(err) 
 }
 }
 const getCustomers = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id1)
-    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
-    console.log(mymessages)
-    res.status(200).json(mymessages[0]?.messages)   
+    const user = await users.findById(req.params.id)
+    const customers = user.chats
+    res.status(200).json({message:customers})   
+} catch (err) {
+    next(err) 
+}
+}
+const getChats = async(req,res,next ) => {
+try {
+    const user = await users.findById(req.params.id)
+    const chats = user.chats.filter(prev=>prev.messages>1)
+    res.status(200).json({message:chats})   
 } catch (err) {
     next(err) 
 }
 }
 const getHistory = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id1)
-    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
-    console.log(mymessages)
-    res.status(200).json(mymessages[0]?.messages)   
+    const user = await users.findById(req.params.id)
+    const history = user.transaction
+    res.status(200).json({message:history})   
 } catch (err) {
     next(err) 
 }
@@ -65,4 +71,4 @@ const postPfp= async (req, res, next) => {
     }
   }
 
-module.exports = {getUsers,getMessages,postPfp,getNotification,getHistory,getCustomers }
+module.exports = {getUsers,getMessages,postPfp,getNotification,getHistory,getCustomers,getChats }
