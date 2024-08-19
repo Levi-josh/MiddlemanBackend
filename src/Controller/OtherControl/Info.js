@@ -1,5 +1,7 @@
 const users = require('../../models/UserSchema')
 const { ObjectId } = require('mongodb')
+const crypto = require('crypto');
+
 
 const getUsers = async(req,res,next ) => {
 try {
@@ -63,8 +65,17 @@ const postPfp= async (req, res, next) => {
       const items={
      profilePic:`/uploads/${imageUrl}`,
       username,
+      walletId:crypto.randomUUID(),
+      inviteCode:crypto.randomUUID()
+
       }  
+      const mydetails = {
+        username,
+        note: `Hi ${username} welcome to the middleman app. we have a web page for frequently asked questions at the top right of the home page,Thank you.`,
+        pic:'http://localhost:3500/assets/middlemanImage.jpg' 
+    };
     await users.updateOne({_id:id},{$set:items}); 
+    await users.findOneAndUpdate({ _id: id }, { $push: { notification: mydetails } }); 
       res.json({ message: `/uploads/${imageUrl}`});
     } catch (err) {
     next(err)

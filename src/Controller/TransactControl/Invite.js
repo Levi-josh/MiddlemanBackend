@@ -39,6 +39,7 @@ const sendInvite = async (req, res, next) => {
 
     try {
         const inviter = await users.findOne({ _id: myid });
+        const invitedUser = await users.findOne({ _id: userid });
         if (!inviter) {
             return res.status(404).json({ message: 'Inviter not found' });
         }
@@ -47,13 +48,15 @@ const sendInvite = async (req, res, next) => {
             accept: false,
             reject: false,
             username: inviter.username,
-            note: `You have been invited by ${inviter.username} for a business transaction`,
-            profilePic: inviter.profilePic,
-            socketId: inviter.socketId
+            note: `Hi ${invitedUser.username} have been invited by ${inviter.username} for a business transaction`,
+            pic:inviter.profilePic    
         };
-
+        const mydetails2 = {
+            username: invitedUser.username,
+            note: `Hi ${inviter.username} your business transaction invitation sent to ${inviter.username} was rejected, do well to send another one `,
+            pic:inviter.profilePic
+        };
         await users.findOneAndUpdate({ _id: userid }, { $push: { notification: mydetails } });
-
         const checkNotification = async () => {
             const invitedUser = await users.findOne({ _id: userid });
             const choice = invitedUser.notification.find(prev => prev.username == inviter.username);
@@ -67,7 +70,7 @@ const sendInvite = async (req, res, next) => {
             }
 
             if (choice?.reject) {
-                await users.updateOne({ _id: inviter._id }, { $push: { notification: `${invitedUser.username} rejected your invite` } });
+                await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
                 return { message: 'Invite rejected' };; // to break the loop
             }
 

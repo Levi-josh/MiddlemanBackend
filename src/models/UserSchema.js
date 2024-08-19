@@ -11,7 +11,8 @@ const noteSchema = new mongoose.Schema({
     note:String,
     accept:Boolean,
     reject:Boolean,
-    username:String
+    username:String,
+    pic:String
 });
 const buyOrsellOptions = new mongoose.Schema({
     options:String,

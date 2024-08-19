@@ -3,7 +3,6 @@ const users = require('../../models/UserSchema')
 const transporter = require('../../Middleware/Nodemailer')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const crypto = require('crypto');
 const sendOtp = async (req, res,next) => {
     const { email,password} = req.body;
     // Generate a 6-digit OTP
@@ -66,14 +65,14 @@ const verifyOtp = async (req, res,next) => {
       const userData = {
         email:otpData.email,
         socketId:'',
-        username:crypto.randomUUID(),
+        username:'',
         password:hash,
         chats:[],
         balance:1000,
         pending:0,
         profilePic:'',
-        inviteCode:crypto.randomUUID(),
-        walletId:crypto.randomUUID(),
+        inviteCode:'',
+        walletId:'',
         notification:[],
         history:[],
         };

@@ -27,10 +27,9 @@ App.use(infoRoutes)
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
-App.get('/', (req, res) => {
-    res.send('Welcome to the backend server');
-});
+
 App.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+App.use('/assets', express.static(path.join(__dirname, 'Assets')));
 handleSocketIO(server);
 const startServer = async () => {
     try {
