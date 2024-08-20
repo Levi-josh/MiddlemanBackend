@@ -35,20 +35,18 @@ const chatdetails = (user) => ({
 const sendInvite = async (req, res, next) => {
     const { userid, myid } = req.body;
     const generatedToken = crypto.randomUUID();
-    console.log(generatedToken);
-
+  
     try {
         const inviter = await users.findOne({ _id: myid });
         const invitedUser = await users.findOne({ _id: userid });
-        if (!inviter) {
-            return res.status(404).json({ message: 'Inviter not found' });
+        if (!inviter || !invitedUser){ 
+        throw new Error('No user found!')
         }
-
         const mydetails = {
             accept: false,
             reject: false,
             username: inviter.username,
-            note: `Hi ${invitedUser.username} have been invited by ${inviter.username} for a business transaction`,
+            note: `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`,
             pic:inviter.profilePic    
         };
         const mydetails2 = {
@@ -59,8 +57,10 @@ const sendInvite = async (req, res, next) => {
         await users.findOneAndUpdate({ _id: userid }, { $push: { notification: mydetails } });
         const checkNotification = async () => {
             const invitedUser = await users.findOne({ _id: userid });
+            if (!invitedUser){ 
+              throw new Error('No user found!')
+              }
             const choice = invitedUser.notification.find(prev => prev.username == inviter.username);
-
             if (choice?.accept) {
                 await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
                 await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
@@ -68,12 +68,10 @@ const sendInvite = async (req, res, next) => {
                 await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
                 return { message: 'Invite accepted' }; // to break the loop
             }
-
             if (choice?.reject) {
                 await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
                 return { message: 'Invite rejected' };; // to break the loop
             }
-
             return null;
         };
 
