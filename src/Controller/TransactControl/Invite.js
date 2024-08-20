@@ -39,8 +39,12 @@ const sendInvite = async (req, res, next) => {
     try {
         const inviter = await users.findOne({ _id: myid });
         const invitedUser = await users.findOne({ _id: userid });
+        const notify = invitedUser.notification.filter(prev=>prev.username == inviter.username)
         if (!inviter || !invitedUser){ 
         throw new Error('No user found!')
+        }
+        if(notify[0].note==`Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`){
+          throw new Error('Request has already been sent')
         }
         const mydetails = {
             accept: false,
