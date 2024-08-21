@@ -3,12 +3,13 @@ const bcrypt = require('bcrypt')
 const users = require('../../models/UserSchema')
 
 const login = async (req, res, next) => {
+    const { email,password} = req.body;
     try {
         const user = await users.findOne({
-            email: req.body.email
+            email:email
         })
         if (user) {
-            const hash = await bcrypt.compare(req.body.password,user.password)
+            const hash = await bcrypt.compare(password,user.password)
             if (hash) {
                 const newjwt = jwt.sign({ _id: user._id }, process.env.Access_Token,{ expiresIn: '2 days' })
                 res.status(200).json({'Accesss_Token':newjwt,'UserId':user._id})
