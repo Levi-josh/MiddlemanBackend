@@ -10,6 +10,7 @@ const oauthRoutes = require('./Routes/OauthRoute')
 const otpRoutes = require('./Routes/otpRoutes')
 const inviteRoutes = require('./Routes/inviteRoute')
 const infoRoutes = require('./Routes/InfoRoutes')
+const jwtRoutes = require('./Routes/JwtRoutes')
 const http = require('http')
 const server = http.createServer(App);
 const handleSocketIO = require('./Utils/Chat');
@@ -21,6 +22,7 @@ App.use(express.json())
 App.use(bodyparser.json())
 App.use(passport.initialize());
 App.use(oauthRoutes)
+App.use(jwtRoutes)
 App.use(otpRoutes)
 App.use(inviteRoutes)
 App.use(infoRoutes)
