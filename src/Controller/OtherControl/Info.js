@@ -35,7 +35,7 @@ const getCustomers = async(req,res,next ) => {
 try {
     const user = await users.findById(req.params.id)
     const customers = user.chats
-    res.status(200).json({message:customers})   
+    res.status(200).json(customers)   
 } catch (err) {
     next(err) 
 }
@@ -44,7 +44,7 @@ const getChats = async(req,res,next ) => {
 try {
     const user = await users.findById(req.params.id)
     const chats = user.chats.filter(prev=>prev.messages>1)
-    res.status(200).json({message:chats})   
+    res.status(200).json(chats)   
 } catch (err) {
     next(err) 
 }
@@ -53,7 +53,7 @@ const getHistory = async(req,res,next ) => {
 try {
     const user = await users.findById(req.params.id)
     const history = user.transaction
-    res.status(200).json({message:history})   
+    res.status(200).json(history)   
 } catch (err) {
     next(err) 
 }
