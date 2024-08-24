@@ -11,13 +11,18 @@ const otpRoutes = require('./Routes/otpRoutes')
 const inviteRoutes = require('./Routes/inviteRoute')
 const infoRoutes = require('./Routes/InfoRoutes')
 const jwtRoutes = require('./Routes/JwtRoutes')
+const paymentRoutes = require('./Routes/PaymentRoute')
 const http = require('http')
 const server = http.createServer(App);
 const handleSocketIO = require('./Utils/Chat');
 const fs = require('fs');
 const path = require('path');
 
-App.use(cors({origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com']}))
+App.use(cors({
+    origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com'],
+    methods:['GET', 'POST', 'PUT', 'DELETE'], // Specify the methods you want to allow
+    credentials: true,
+}))
 App.use(express.json())
 App.use(bodyparser.json())
 App.use(passport.initialize());
@@ -26,6 +31,7 @@ App.use(jwtRoutes)
 App.use(otpRoutes)
 App.use(inviteRoutes)
 App.use(infoRoutes)
+App.use(paymentRoutes)
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
