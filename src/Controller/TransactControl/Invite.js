@@ -62,7 +62,7 @@ const sendInvite = async (req, res, next) => {
         const checkNotification = async () => {
             const invitedUser = await users.findOne({ _id: userid });
             if (!invitedUser){ 
-              throw new Error('No user found!')
+              throw new Error('No user found2!')
               }
             const choice = invitedUser.notification.find(prev => prev.username == inviter.username);
             if (choice?.accept) {

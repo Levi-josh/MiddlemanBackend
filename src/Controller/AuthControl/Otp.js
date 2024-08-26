@@ -23,12 +23,15 @@ const sendOtp = async (req, res,next) => {
     password,
     };   
     const user = await otpUsers.findOne({email})
+    const registeredUser = await users.findOne({email})
     if(user){
       await otpUsers.updateOne({email},{$set:{otp}})
       await otpUsers.updateOne({email},{$set:{createdAt:Date.now()}})
     }
+    if(registeredUser){
+      throw new Error('User already exist')
+    }
     else{
-    // Insert the OTP data into the database
     const result= await otpUsers.create(otpData)
     }
     // Send the OTP email
@@ -36,32 +39,25 @@ const sendOtp = async (req, res,next) => {
     res.status(200).json({ message: 'OTP sent to email.' });
     } catch (err) {
     next(err);
-    // res.status(500).json({ message: 'Failed to send OTP.' });
     }};
-    // Route to verify OTP
+
 const verifyOtp = async (req, res,next) => {
     const { otp } = req.body;
     try {
       // Retrieve the stored OTP for the email from the database
       const otpData = await otpUsers.findOne({otp});
-      console.log(otpData)
       const salt = await bcrypt.genSalt()
       const hash = await bcrypt.hash(otpData.password, salt)
-      console.log(hash)
       if (!otpData) {
         throw new Error('No user found')
       }
       // Check if the OTP is expired (valid for 10 minutes)
       const otpAge = new Date() - otpData.createdAt;
       const maxOtpAge = 10 * 60 * 1000; // 10 minutes
-      console.log(otpAge )
-      console.log(maxOtpAge)
       if (otpAge > maxOtpAge) {
         throw new Error('OTP expired.')
       }
- 
       // Register the user
-
       const userData = {
         email:otpData.email,
         socketId:'',
@@ -83,7 +79,6 @@ const verifyOtp = async (req, res,next) => {
       res.status(200).json({'Accesss_Token':newjwt,'UserId':newUser._id})
     } catch (err) {
       next(err);
-    //   res.status(500).json({ message: 'Failed to verify OTP.' });
     }
   };
 

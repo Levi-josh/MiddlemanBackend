@@ -4,7 +4,6 @@ const users = require('../../models/UserSchema')
 
 const login = async (req, res, next) => {
     const {email,password} = req.body;
-    console.log(email)
     try {
         const user = await users.findOne({
             email:email

@@ -11,11 +11,8 @@ const updateMessages = async (id, details) => {
     // Define the filter and update objects
     const filter = { 'chats._id': chatId };
     const update = { $push: { 'chats.$.messages': details } }; // Ensure the key is 'messages'
-    console.log('Filter:', filter);
-    console.log('Update:', update);
     // Perform the update
     const updated = await user.updateOne(filter, update);
-    console.log('Update Result:', updated);
     if (updated.matchedCount === 0) {
       console.log('No documents matched the provided query.');
     }
@@ -31,7 +28,7 @@ const updateMessages = async (id, details) => {
 function handleSocketIO(server) {
   const io = socketIO(server, {
     cors: {
-      origin: "http://localhost:5173", // Replace with your frontend URL
+      origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com'], // Replace with your frontend URL
       methods: ["GET", "POST"],
       allowedHeaders: ["my-custom-header"],
       credentials: true
@@ -69,6 +66,9 @@ function handleSocketIO(server) {
       } else {
         console.log(`Recipient ${to} is not currently connected.`);
         // Handle the case when the recipient is not connected
+        await updateMessages(recipientChatIdString, chatdetails);
+        io.to(sender.socketId).emit('private chat', { from, to, message }); // Also send the message back to the sender
+        await updateMessages(senderChatIdString, chatdetails);
       }
     });
 
