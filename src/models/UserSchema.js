@@ -9,8 +9,6 @@ const messageSchema = new mongoose.Schema({
 });
 const noteSchema = new mongoose.Schema({
     note:String,
-    accept:Boolean,
-    reject:Boolean,
     username:String,
     pic:String
 });
