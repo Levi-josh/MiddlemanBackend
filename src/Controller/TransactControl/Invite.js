@@ -32,155 +32,155 @@ const chatdetails = (user) => ({
     profilePic:user.profilePic,
 })
 
-const sendInvite = async (req, res, next) => {
-  const { userid, myid } = req.body;
-  const generatedToken = crypto.randomUUID();
-
-  try {
-      const inviter = await users.findOne({ _id: myid });
-      const invitedUser = await users.findOne({ _id: userid });
-
-      if (!inviter || !invitedUser) {
-          return res.status(404).json({ error: 'User not found!' });
-      }
-
-      // Check for existing notification
-      const notify = invitedUser.notification.find(prev => prev.username === inviter.username);
-      if (notify && notify.note === `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`) {
-          return res.status(400).json({ error: 'Request has already been sent' });
-      }
-
-      const mydetails = {
-          accept: false,
-          reject: false,
-          username: inviter.username,
-          note: `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`,
-          pic: inviter.profilePic
-      };
-
-      const mydetails2 = {
-          username: invitedUser.username,
-          note: `Hi ${inviter.username} your business transaction invitation sent to ${invitedUser.username} was rejected, do well to send another one `,
-          pic: inviter.profilePic
-      };
-
-      await users.findOneAndUpdate(
-          { _id: userid },
-          { $push: { notification: mydetails } },
-          { new: true }
-      );
-
-      const checkNotification = async () => {
-          const invitedUser = await users.findOne({ _id: userid });
-          if (!invitedUser) {
-              throw new Error('User not found during notification check!');
-          }
-
-          const choice = invitedUser.notification.find(prev => prev.username === inviter.username);
-          if (choice?.accept) {
-              // Handle accept logic
-              await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
-              await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
-              await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
-              await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
-              return { message: 'Invite accepted' };
-          }
-
-          if (choice?.reject) {
-              // Handle reject logic
-              await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
-              return { message: 'Invite rejected' };
-          }
-
-          return null;
-      };
-
-      const checkInvitations = async () => {
-          let retryCount = 0; // Added retry limit
-          const maxRetries = 12; // Limit polling to 2 minutes (12 * 10 seconds)
-
-          while (retryCount < maxRetries) {
-              const result = await checkNotification();
-              if (result) {
-                  return res.status(200).json(result);
-              }
-              await new Promise(resolve => setTimeout(resolve, 10000)); // Polling every 10 seconds
-              retryCount++;
-          }
-
-          // If max retries exceeded
-          return res.status(408).json({ error: 'Timeout waiting for invite response' });
-      };
-
-      await checkInvitations();
-  } catch (err) {
-      console.error('Error in sendInvite:', err.message);
-      next(err);
-  }
-};
-
 // const sendInvite = async (req, res, next) => {
-//     const { userid, myid } = req.body;
-//     const generatedToken = crypto.randomUUID();
-  
-//     try {
-//         const inviter = await users.findOne({ _id: myid });
-//         const invitedUser = await users.findOne({ _id: userid });
-//         const notify = invitedUser.notification.filter(prev=>prev.username == inviter.username)
-//         if (!inviter || !invitedUser){ 
-//         throw new Error('No user found!')
-//         }
-//         if(notify[0].note==`Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`){
-//           throw new Error('Request has already been sent')
-//         }
-//         const mydetails = {
-//             accept: false,
-//             reject: false,
-//             username: inviter.username,
-//             note: `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`,
-//             pic:inviter.profilePic    
-//         };
-//         const mydetails2 = {
-//             username: invitedUser.username,
-//             note: `Hi ${inviter.username} your business transaction invitation sent to ${inviter.username} was rejected, do well to send another one `,
-//             pic:inviter.profilePic
-//         };
-//         await users.findOneAndUpdate({ _id: userid }, { $push: { notification: mydetails } });
-//         const checkNotification = async () => {
-//             const invitedUser = await users.findOne({ _id: userid });
-//             if (!invitedUser){ 
-//               throw new Error('No user found2!')
-//               }
-//             const choice = invitedUser.notification.find(prev => prev.username == inviter.username);
-//             if (choice?.accept) {
-//                 await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
-//                 await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
-//                 await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
-//                 await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
-//                 return { message: 'Invite accepted' }; // to break the loop
-//             }
-//             if (choice?.reject) {
-//                 await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
-//                 return { message: 'Invite rejected' };; // to break the loop
-//             }
-//             return null;
-//         };
+//   const { userid, myid } = req.body;
+//   const generatedToken = crypto.randomUUID();
 
-//         const checkInvitations = async () => {
-//           while (true) {
+//   try {
+//       const inviter = await users.findOne({ _id: myid });
+//       const invitedUser = await users.findOne({ _id: userid });
+
+//       if (!inviter || !invitedUser) {
+//           return res.status(404).json({ error: 'User not found!' });
+//       }
+
+//       // Check for existing notification
+//       const notify = invitedUser.notification.find(prev => prev.username === inviter.username);
+//       if (notify && notify.note === `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`) {
+//           return res.status(400).json({ error: 'Request has already been sent' });
+//       }
+
+//       const mydetails = {
+//           accept: false,
+//           reject: false,
+//           username: inviter.username,
+//           note: `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`,
+//           pic: inviter.profilePic
+//       };
+
+//       const mydetails2 = {
+//           username: invitedUser.username,
+//           note: `Hi ${inviter.username} your business transaction invitation sent to ${invitedUser.username} was rejected, do well to send another one `,
+//           pic: inviter.profilePic
+//       };
+
+//       await users.findOneAndUpdate(
+//           { _id: userid },
+//           { $push: { notification: mydetails } },
+//           { new: true }
+//       );
+
+//       const checkNotification = async () => {
+//           const invitedUser = await users.findOne({ _id: userid });
+//           if (!invitedUser) {
+//               throw new Error('User not found during notification check!');
+//           }
+
+//           const choice = invitedUser.notification.find(prev => prev.username === inviter.username);
+//           if (choice?.accept) {
+//               // Handle accept logic
+//               await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
+//               await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
+//               await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
+//               await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
+//               return { message: 'Invite accepted' };
+//           }
+
+//           if (choice?.reject) {
+//               // Handle reject logic
+//               await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
+//               return { message: 'Invite rejected' };
+//           }
+
+//           return null;
+//       };
+
+//       const checkInvitations = async () => {
+//           let retryCount = 0; // Added retry limit
+//           const maxRetries = 12; // Limit polling to 2 minutes (12 * 10 seconds)
+
+//           while (retryCount < maxRetries) {
 //               const result = await checkNotification();
 //               if (result) {
 //                   return res.status(200).json(result);
 //               }
 //               await new Promise(resolve => setTimeout(resolve, 10000)); // Polling every 10 seconds
+//               retryCount++;
 //           }
+
+//           // If max retries exceeded
+//           return res.status(408).json({ error: 'Timeout waiting for invite response' });
 //       };
 
 //       await checkInvitations();
-//     } catch (err) {
-//         next(err);
-//     }
+//   } catch (err) {
+//       console.error('Error in sendInvite:', err.message);
+//       next(err);
+//   }
 // };
+
+const sendInvite = async (req, res, next) => {
+    const { userid, myid } = req.body;
+    const generatedToken = crypto.randomUUID();
+  
+    try {
+        const inviter = await users.findOne({ _id: myid });
+        const invitedUser = await users.findOne({ _id: userid });
+        const notify = invitedUser.notification.filter(prev=>prev.username == inviter.username)
+        if (!inviter || !invitedUser){ 
+        throw new Error('No user found!')
+        }
+        if(notify[0].note==`Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`){
+          throw new Error('Request has already been sent')
+        }
+        const mydetails = {
+            accept: false,
+            reject: false,
+            username: inviter.username,
+            note: `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`,
+            pic:inviter.profilePic    
+        };
+        const mydetails2 = {
+            username: invitedUser.username,
+            note: `Hi ${inviter.username} your business transaction invitation sent to ${inviter.username} was rejected, do well to send another one `,
+            pic:inviter.profilePic
+        };
+        await users.findOneAndUpdate({ _id: userid }, { $push: { notification: mydetails } });
+        const checkNotification = async () => {
+            const invitedUser = await users.findOne({ _id: userid });
+            if (!invitedUser){ 
+              throw new Error('No user found2!')
+              }
+            const choice = invitedUser.notification.find(prev => prev.username == inviter.username);
+            if (choice?.accept) {
+                await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
+                await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
+                await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
+                await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
+                return { message: 'Invite accepted' }; // to break the loop
+            }
+            if (choice?.reject) {
+                await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
+                return { message: 'Invite rejected' };; // to break the loop
+            }
+            return null;
+        };
+
+        const checkInvitations = async () => {
+          while (true) {
+              const result = await checkNotification();
+              if (result) {
+                  return res.status(200).json(result);
+              }
+              await new Promise(resolve => setTimeout(resolve, 10000)); // Polling every 10 seconds
+          }
+      };
+
+      await checkInvitations();
+    } catch (err) {
+        next(err);
+    }
+};
 const acceptInvite = async(req,res,next)=>{
   const noteId = req.params.id1
   const myid = req.params.id2
