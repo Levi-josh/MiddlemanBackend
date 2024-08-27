@@ -58,18 +58,33 @@ function handleSocketIO(server) {
       const senderChatId = sender.chats.find(prev => prev.userId == to);
       const recipientChatIdString = recipientChatId._id.toString();
       const senderChatIdString = senderChatId._id.toString();
+      // if (recipient && recipient.socketId) {
+      //   io.to(recipient.socketId).emit('private chat', { from, to, message });
+      //   await updateMessages(recipientChatIdString, chatdetails);
+      //   io.to(sender.socketId).emit('private chat', { from, to, message }); // Also send the message back to the sender
+      //   await updateMessages(senderChatIdString, chatdetails);
+      // } else {
+      //   console.log(`Recipient ${to} is not currently connected.`);
+      //   // Handle the case when the recipient is not connected
+      //   console.log(`${sender.socketId}is the senders id`)
+      //   await updateMessages(recipientChatIdString, chatdetails);
+      //   io.to(sender.socketId).emit('private chat', { from, to, message }); // Also send the message back to the sender
+      //   await updateMessages(senderChatIdString, chatdetails);
+      // }
       if (recipient && recipient.socketId) {
+        // Recipient is online
         io.to(recipient.socketId).emit('private chat', { from, to, message });
-        await updateMessages(recipientChatIdString, chatdetails);
-        io.to(sender.socketId).emit('private chat', { from, to, message }); // Also send the message back to the sender
-        await updateMessages(senderChatIdString, chatdetails);
       } else {
+        // Recipient is offline
         console.log(`Recipient ${to} is not currently connected.`);
-        // Handle the case when the recipient is not connected
-        await updateMessages(recipientChatIdString, chatdetails);
-        io.to(sender.socketId).emit('private chat', { from, to, message }); // Also send the message back to the sender
-        await updateMessages(senderChatIdString, chatdetails);
       }
+
+      // Always send message back to sender and save to both parties' chat history
+      if (sender.socketId) {
+        io.to(sender.socketId).emit('private chat', { from, to, message });
+      }
+      await updateMessages(recipientChatId, chatdetails);
+      await updateMessages(senderChatId, chatdetails);
     });
 
     socket.on('disconnect', async () => {
