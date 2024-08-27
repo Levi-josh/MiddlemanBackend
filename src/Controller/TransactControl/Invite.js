@@ -84,8 +84,14 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
           }
 
           const choice = invitedUser.notification.find(prev => prev.username === inviter.username);
-          if (choice?.accept) {
-              // Handle accept logic
+            if (choice?.accept) {
+                // Handle accept logic
+                const mydetails2 = {
+                  username: invitedUser.username,
+                  note: `Hi ${inviter.username} your business transaction invitation sent to ${invitedUser.username} has been accepted`,
+                  pic: inviter.profilePic
+              };
+              await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
               await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
               await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
               await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
