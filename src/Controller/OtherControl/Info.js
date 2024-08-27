@@ -43,8 +43,8 @@ try {
 const getChats = async(req,res,next ) => {
 try {
     const user = await users.findById(req.params.id)
-    const chats = user.chats.filter(prev=>prev.messages>0)
-    res.status(200).json(chats)   
+    const chat = user.chats.filter(prev=>prev.messages.length>0)
+    res.status(200).json(chat)   
 } catch (err) {
     next(err) 
 }
