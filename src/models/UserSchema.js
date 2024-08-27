@@ -10,7 +10,9 @@ const messageSchema = new mongoose.Schema({
 const noteSchema = new mongoose.Schema({
     note:String,
     username:String,
-    pic:String
+    pic:String,
+    accept: Boolean,
+    reject: Boolean
 });
 const buyOrsellOptions = new mongoose.Schema({
     options:String,
