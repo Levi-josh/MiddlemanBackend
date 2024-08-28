@@ -16,12 +16,12 @@ const getMessages = async(req,res,next ) => {
 try {
     const user = await users.findById(req.params.id1)
     const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
-    console.log(mymessages)
-    res.status(200).json(mymessages[0]?.messages)   
+    res.status(200).json(mymessages[0])   
 } catch (err) {
     next(err) 
 }
 }
+
 const getNotification = async(req,res,next ) => {
 try {
     const user = await users.findById(req.params.id)
