@@ -22,10 +22,18 @@ try {
 }
 }
 const markAsRead = async(req,res,next ) => {
+    const { userId, contactId } = req.body;
 try {
-    const user = await users.findById(req.params.id1)
-    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
-    res.status(200).json(mymessages[0])   
+    const user = await users.findOneAndUpdate(
+        { _id: userId, 'chats.userId': contactId },
+        { $set: { 'chats.$.messages.$[].read': true } }, // Update all messages read status to true
+        { new: true }
+      );
+  
+      if (!user) {
+        throw new Error('User or contact not found') 
+      }
+    res.status(200).json({message:'read'})   
 } catch (err) {
     next(err) 
 }
