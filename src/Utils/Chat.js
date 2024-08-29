@@ -38,18 +38,16 @@ function handleSocketIO(server) {
     console.log(`${socket.id} connected`);
     socket.on('setCustomId', async (customId) => {
       socket.customId = customId;
-      console.log(`Socket ID ${socket.id} is now associated with Custom ID ${socket.customId}`);
-      // Update the user's socket ID in the database
       await user.findOneAndUpdate({ _id: customId }, { socketId: socket.id }, { upsert: true });
     });
     socket.on('private chat', async (data) => {
-      console.log(data)
-      const { from, to, message } = data;
+      const { from, to, message,timestamp } = data;
       const chatdetails = {
         from,
         to,
         message,
-        timestamp: Date.now() // Adding timestamp to details
+        timestamp,// Adding timestamp to details
+        read:false,
       };
       // Find the recipient's session using customId
       const recipient = await user.findOne({ _id: to });
@@ -73,7 +71,7 @@ function handleSocketIO(server) {
       // }
       if (recipient && recipient.socketId) {
         // Recipient is online
-        io.to(recipient.socketId).emit('private chat', { from, to, message });
+        io.to(recipient.socketId).emit('private chat', { from, to, message,timestamp });
       } else {
         // Recipient is offline
         console.log(`Recipient ${to} is not currently connected.`);
@@ -81,7 +79,7 @@ function handleSocketIO(server) {
 
       // Always send message back to sender and save to both parties' chat history
       if (sender.socketId) {
-        io.to(sender.socketId).emit('private chat', { from, to, message });
+        io.to(sender.socketId).emit('private chat', { from, to, message,timestamp });
       }
       await updateMessages(recipientChatId, chatdetails);
       await updateMessages(senderChatId, chatdetails);

@@ -21,6 +21,15 @@ try {
     next(err) 
 }
 }
+const markAsRead = async(req,res,next ) => {
+try {
+    const user = await users.findById(req.params.id1)
+    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
+    res.status(200).json(mymessages[0])   
+} catch (err) {
+    next(err) 
+}
+}
 
 const getNotification = async(req,res,next ) => {
 try {
@@ -82,4 +91,4 @@ const postPfp= async (req, res, next) => {
     }
   }
 
-module.exports = {getUsers,getMessages,postPfp,getNotification,getHistory,getCustomers,getChats }
+module.exports = {getUsers,markAsRead,getMessages,postPfp,getNotification,getHistory,getCustomers,getChats }

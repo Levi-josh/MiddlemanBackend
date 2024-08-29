@@ -27,8 +27,7 @@ const chatdetails = (user) => ({
       to: 'the two users' ,
       message: `Tap to start the conversation `,
     }],
-    read:false,
-    msgUnread:1,
+    msgUnread:0,
     profilePic:user.profilePic,
 })
 

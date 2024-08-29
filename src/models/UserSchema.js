@@ -5,14 +5,13 @@ const messageSchema = new mongoose.Schema({
     from: String,
     to: String,
     message: String,
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    read:Boolean,
 });
 const noteSchema = new mongoose.Schema({
     note:String,
     username:String,
     pic:String,
-    accept: Boolean,
-    reject: Boolean
 });
 const buyOrsellOptions = new mongoose.Schema({
     options:String,
@@ -31,7 +30,6 @@ const chatSchema = new mongoose.Schema({
     userId:String,
     socketId:String,
     messages:[messageSchema],
-    read:Boolean,
     msgUnread:Number,
     profilePic:String,
 })
