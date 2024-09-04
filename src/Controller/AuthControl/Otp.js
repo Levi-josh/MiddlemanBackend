@@ -5,9 +5,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const sendOtp = async (req, res,next) => {
     const { email,password} = req.body;
-    // Generate a 6-digit OTP
     let otp = Math.floor(100000 + Math.random() * 900000).toString();
-    // Send OTP to the email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
