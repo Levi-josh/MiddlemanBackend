@@ -2,6 +2,7 @@ const users = require('../../models/UserSchema')
 const { ObjectId } = require('mongodb')
 const crypto = require('crypto');
 const { bucket } = require('../../Utils/Firebasecred')
+const path = require('path')
 
 
 const getUsers = async(req,res,next ) => {
@@ -77,12 +78,13 @@ try {
 }
 }
 const postPfp= async (req, res, next) => { 
+    const{id,username} = req.body; 
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
       }
-    const imageUrl = req.file.filename
-      // Create a new blob in the bucket and upload the file data
-      const blob = bucket.file(Date.now() + path.extname(imageUrl));
+    const filename = req.file.originalname; // Use originalname to get the file's original name
+    const fileExtension = path.extname(filename);
+    const blob = bucket.file(Date.now() + fileExtension);
       const blobStream = blob.createWriteStream({
         metadata: {
           contentType: req.file.mimetype,
@@ -93,11 +95,11 @@ const postPfp= async (req, res, next) => {
       });
   
       blobStream.on('finish', async () => {
+        await blob.makePublic();
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
         try {
-            const{id,username} = req.body; // Assuming you have the user's ID in the request body
                 const items={
-                profilePic:`/uploads/${imageUrl}`,
+                profilePic:publicUrl,
                 username,
                 walletId:crypto.randomUUID(),
                 inviteCode:crypto.randomUUID()
@@ -109,7 +111,7 @@ const postPfp= async (req, res, next) => {
                 };
             await users.updateOne({_id:id},{$set:items}); 
             await users.findOneAndUpdate({ _id: id }, { $push: { notification: mydetails } }); 
-            res.status(200).json({ message:publicUrl});
+            res.status(200).json({message:publicUrl});
         } catch (err) {
           next(err)
         }

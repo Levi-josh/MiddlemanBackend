@@ -24,6 +24,9 @@ const sendOtp = async (req, res,next) => {
     };   
     const user = await otpUsers.findOne({email})
     const registeredUser = await users.findOne({email})
+    if(password.length<6){
+      throw new Error('password must be six characters')
+    }
     if(user){
       await otpUsers.updateOne({email},{$set:{otp}})
       await otpUsers.updateOne({email},{$set:{createdAt:Date.now()}})

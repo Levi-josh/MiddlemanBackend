@@ -1,14 +1,9 @@
 const admin = require('firebase-admin');
-const dotenv = require('dotenv');
-const path = require('path');
+const path = require('path')
+const fs = require('fs');
 
-// Load environment variables from .env file
-dotenv.config();
-
-// Parse GOOGLE_APPLICATION_CREDENTIALS from environment variable
-const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-
-// Initialize Firebase Admin SDK
+const serviceAccountPath = path.resolve(__dirname, '../../../firebasecred/Serviceaccout.json');
+const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: "middleman-5eccd.appspot.com",

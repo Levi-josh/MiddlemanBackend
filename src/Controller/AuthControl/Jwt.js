@@ -8,6 +8,9 @@ const login = async (req, res, next) => {
         const user = await users.findOne({
             email:email
         })
+        if(password.length<6){
+            throw new Error('password must be six characters')
+          }
         if (user) {
             const hash = await bcrypt.compare(password,user.password)
             if (hash) {
