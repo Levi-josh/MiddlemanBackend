@@ -5,7 +5,7 @@ const fs = require('fs');
 const serviceAccountPath = path.resolve(__dirname, '../../../firebasecred/Serviceaccout.json');
 const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.applicationDefault(),
   storageBucket: "middleman-5eccd.appspot.com",
 });
 
