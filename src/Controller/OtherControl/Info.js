@@ -107,7 +107,7 @@ const postPfp= async (req, res, next) => {
                 const mydetails = {
                     username,
                     note: `Hi ${username} welcome to the middleman app. we have a web page for frequently asked questions at the top right of the home page,Thank you.`,
-                    pic:'http://localhost:3500/assets/middlemanImage.jpg' 
+                    pic:'https://middlemanbackend.onrender.com/assets/middlemanImage.jpg' 
                 };
             await users.updateOne({_id:id},{$set:items}); 
             await users.findOneAndUpdate({ _id: id }, { $push: { notification: mydetails } }); 

@@ -9,9 +9,11 @@ const messageSchema = new mongoose.Schema({
     read:Boolean,
 });
 const noteSchema = new mongoose.Schema({
-    note:String,
-    username:String,
-    pic:String,
+    note: String,
+    username: String,
+    pic: String,
+    accept: { type: Boolean, required: false },  // Optional field
+    reject: { type: Boolean, required: false } 
 });
 const buyOrsellOptions = new mongoose.Schema({
     options:String,
