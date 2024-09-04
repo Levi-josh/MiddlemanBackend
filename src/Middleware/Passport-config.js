@@ -3,7 +3,7 @@ const passport = require('passport');
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
 passport.use('google', new OAuth2Strategy ({
-  clientID: '658900727504-8vmac3p57p22a8en38m6duk3ritde4fo.apps.googleusercontent.com',
+  clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
     callbackURL: 'http://localhost:3500/auth/google/callback',
     authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
