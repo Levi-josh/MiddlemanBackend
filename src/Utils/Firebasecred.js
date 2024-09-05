@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-// const path = require('path')
+// // const path = require('path')
 // const fs = require('fs');
 
 // const serviceAccountPath = path.resolve(__dirname, '../../../firebasecred/Serviceaccout.json');
@@ -10,7 +10,6 @@ admin.initializeApp({
   storageBucket: "middleman-5eccd.appspot.com",
 });
 
-// Export the configured admin and bucket
 const bucket = admin.storage().bucket();
 
 module.exports = { admin, bucket };
