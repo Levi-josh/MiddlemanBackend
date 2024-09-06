@@ -91,12 +91,17 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
                   note: `Hi ${inviter.username} your business transaction invitation sent to ${invitedUser.username} has been accepted`,
                   pic: inviter.profilePic
               };
-              await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
-              await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
-              await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
-              await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
-              await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
+              const a = await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
+              const b = await users.updateOne({ _id: inviter._id }, { $push: { chats: chatdetails(invitedUser) } });
+              const c = await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
+              const d = await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
+              const f = await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
               console.log('Invite accepted');
+              console.log(`a:${a}`)
+              console.log(`b:${b}`)
+              console.log(`c:${c}`)
+              console.log(`d:${d}`)
+              console.log(`f:${f}`)
               return { message: 'Invite accepted' };
           }
 
@@ -117,16 +122,16 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
 
       // Polling loop
       let retryCount = 0;
-      const maxRetries = 12; // Polling limit
+      const maxRetries = 20; // Increase the retry limit
       while (retryCount < maxRetries) {
           const result = await checkNotification();
           if (result) {
               break; // Stop polling if result is found
           }
-          await new Promise(resolve => setTimeout(resolve, 10000)); // Poll every 10 seconds
+          await new Promise(resolve => setTimeout(resolve, 20000)); // Poll every 20 seconds
           retryCount++;
       }
-
+      console.log('Polling iteration:', retryCount);
   } catch (err) {
       console.error('Error in handleInvitationResponse:', err.message);
   }
