@@ -80,7 +80,7 @@ try {
 const postPfp= async (req, res, next) => { 
     const{id,username} = req.body; 
     if (!req.file) {
-        return res.status(400).send('No file uploaded.');
+      throw new Error('No file uploaded.');
       }
     const filename = req.file.originalname; // Use originalname to get the file's original name
     const fileExtension = path.extname(filename);
@@ -93,7 +93,6 @@ const postPfp= async (req, res, next) => {
       blobStream.on('error', (err) => {
         res.status(500).json({ error: err.message });
       });
-  
       blobStream.on('finish', async () => {
         await blob.makePublic();
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;

@@ -34,20 +34,16 @@ const chatdetails = (user) => ({
 const sendInvite = async (req, res, next) => {
   const { userid, myid } = req.body;
   const generatedToken = crypto.randomUUID();
-
   try {
       const inviter = await users.findOne({ _id: myid });
       const invitedUser = await users.findOne({ _id: userid });
-
       if (!inviter || !invitedUser) {
-          return res.status(404).json({ error: 'User not found!' });
+        throw new Error('User not found!');
       }
-
       const notify = invitedUser.notification.find(prev => prev.username === inviter.username);
       if (notify && notify.note === `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`) {
-          return res.status(400).json({ error: 'Request has already been sent' });
+        throw new Error('Request has already been sent');
       }
-
       const mydetails = {
           accept: false,
           reject: false,
@@ -55,20 +51,16 @@ const sendInvite = async (req, res, next) => {
           note: `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`,
           pic: inviter.profilePic
       };
-
       await users.findOneAndUpdate(
           { _id: userid },
           { $push: { notification: mydetails } }
       );
-
       // Send immediate response to the client
       res.status(200).json({ message: 'Invitation sent successfully.' });
-
       // Start background task
       handleInvitationResponse(userid, myid, generatedToken, inviter, invitedUser);
 
   } catch (err) {
-      console.error('Error in sendInvite:', err.message);
       next(err);
   }
 };
@@ -84,8 +76,6 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
           const choice = invitedUser.notification.find(prev => prev.username === inviter.username);
           console.log(choice)
             if (choice?.accept) {
-                // Handle accept logic
-                console.log('request accepted')
                 const mydetails2 = {
                   username: invitedUser.username,
                   note: `Hi ${inviter.username} your business transaction invitation sent to ${invitedUser.username} has been accepted`,
@@ -96,15 +86,8 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
               const c = await users.updateOne({ _id: userid }, { $push: { chats: chatdetails(inviter) } });
               const d = await users.updateOne({ _id: inviter._id }, { $push: { transaction: createTransactionDetails(invitedUser._id, generatedToken) } });
               const f = await users.updateOne({ _id: userid }, { $push: { transaction: createTransactionDetails(inviter._id, generatedToken) } });
-              console.log('Invite accepted');
-              console.log(`a:${a}`)
-              console.log(`b:${b}`)
-              console.log(`c:${c}`)
-              console.log(`d:${d}`)
-              console.log(`f:${f}`)
               return { message: 'Invite accepted' };
           }
-
           if (choice?.reject) {
               // Handle reject logic
               const mydetails2 = {
@@ -113,10 +96,8 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
                   pic: inviter.profilePic
               };
               await users.updateOne({ _id: inviter._id }, { $push: { notification: mydetails2 } });
-              console.log('Invite rejected');
               return { message: 'Invite rejected' };
           }
-
           return null;
       };
 
@@ -133,7 +114,7 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
       }
       console.log('Polling iteration:', retryCount);
   } catch (err) {
-      console.error('Error in handleInvitationResponse:', err.message);
+    next(err)
   }
 };
 

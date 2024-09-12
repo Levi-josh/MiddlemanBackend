@@ -17,6 +17,7 @@ const server = http.createServer(App);
 const handleSocketIO = require('./Utils/Chat');
 const fs = require('fs');
 const path = require('path');
+const errorhandler = require('./Middleware/Error')
 
 App.use(cors({
     origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com'],
@@ -35,10 +36,10 @@ App.use(paymentRoutes)
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
-
 App.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 App.use('/assets', express.static(path.join(__dirname, 'Assets')));
 handleSocketIO(server);
+App.use(errorhandler)
 const startServer = async () => {
     try {
         await mongodb();
