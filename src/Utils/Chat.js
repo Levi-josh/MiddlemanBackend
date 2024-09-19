@@ -28,7 +28,7 @@ const updateMessages = async (id, details) => {
 function handleSocketIO(server) {
   const io = socketIO(server, {
     cors: {
-      origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com'], // Replace with your frontend URL
+      origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com'], 
       methods: ["GET", "POST"],
       allowedHeaders: ["my-custom-header"],
       credentials: true
