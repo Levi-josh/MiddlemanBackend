@@ -10,9 +10,11 @@ const errorhandler = (err, req, res, next) => {
     }
     if(err.message === 'User already exist'||`User doesn't exist`){
         newerror.username =  err.message;
+        return res.status(409).json({ errorMessage: newerror });
     }
     if(err.message === 'Incorrect password'||`password must be six characters`){
         newerror.password =  err.message;
+        return res.status(409).json({ errorMessage: newerror });
     }
     // Handle Mongoose duplicate key errors (e.g., Unique constraint violated)
     if (err.code === 11000) {
