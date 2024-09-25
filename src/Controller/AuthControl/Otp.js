@@ -56,7 +56,7 @@ const verifyOtp = async (req, res,next) => {
       const otpAge = new Date() - otpData.createdAt;
       const maxOtpAge = 10 * 60 * 1000; // 10 minutes
       if (otpAge > maxOtpAge) {
-        throw new Error('OTP expired.')
+        throw new Error('OTP expired')
       }
       // Register the user
       const userData = {

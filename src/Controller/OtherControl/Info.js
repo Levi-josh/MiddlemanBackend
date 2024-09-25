@@ -33,7 +33,7 @@ try {
       );
   
       if (!user) {
-        throw new Error('User or contact not found') 
+        throw new Error('No user found') 
       }
     res.status(200).json({message:'read'})   
 } catch (err) {
@@ -80,7 +80,7 @@ try {
 const postPfp= async (req, res, next) => { 
     const{id,username} = req.body; 
     if (!req.file) {
-      throw new Error('No file uploaded.');
+      throw new Error('No file uploaded');
       }
     const filename = req.file.originalname; // Use originalname to get the file's original name
     const fileExtension = path.extname(filename);

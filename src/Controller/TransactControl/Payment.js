@@ -5,7 +5,7 @@ const searchWallet = async(req,res,next)=>{
     try {
       const seachedUser = await users.findOne({walletid})
       if(!seachedUser){
-        throw new Error('No user found!')
+        throw new Error('No user found')
       }
       res.status(200).json({username:seachedUser.username,_id:seachedUser._id,profilePic:seachedUser.profilePic})
     } catch (err) {
@@ -17,7 +17,7 @@ const deposit = async(req,res,next)=>{
     try {
       const seachedUser = await users.findOne({_id:userId})
       if(!seachedUser){
-        throw new Error('No user found!')
+        throw new Error('No user found')
       }
       await users.updateOne({ _id: userId }, { $inc: { balance: amount } });
       res.status(200).json({message:'deposited'})
@@ -58,7 +58,7 @@ const makePayment = async (req, res, next) => {
       }
       const receiver = await users.findOne({ _id: recipientId });
       if (!receiver) {
-        throw new Error('Receiver not found!')
+        throw new Error('No user found')
       }
       const hasDeal = receiver.transaction.find(prev => prev.transactionWith == userId);
       if (!hasDeal) {

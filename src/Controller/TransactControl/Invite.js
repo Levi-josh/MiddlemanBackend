@@ -38,7 +38,7 @@ const sendInvite = async (req, res, next) => {
       const inviter = await users.findOne({ _id: myid });
       const invitedUser = await users.findOne({ _id: userid });
       if (!inviter || !invitedUser) {
-        throw new Error('User not found!');
+        throw new Error('No user found');
       }
       const notify = invitedUser.notification.find(prev => prev.username === inviter.username);
       if (notify && notify.note === `Hi ${invitedUser.username} you have been invited by ${inviter.username} for a business transaction`) {
@@ -212,7 +212,7 @@ const searchInvite = async(req,res,next)=>{
     const invitedUser = await users.findOne({inviteCode:id})
     console.log(invitedUser)
     if(!invitedUser){
-      throw new Error('No user with that invitecode is found')
+      throw new Error('No user found')
     }
     res.status(200).json({username:invitedUser.username,id:invitedUser._id,profilePic:invitedUser.profilePic})
   } catch (err) {
