@@ -32,10 +32,11 @@ const chatdetails = (user) => ({
 })
 
 const sendInvite = async (req, res, next) => {
-  const { userid, myid } = req.body;
+  const { userid } = req.body;
+  const Id = req.user
   const generatedToken = crypto.randomUUID();
   try {
-      const inviter = await users.findOne({ _id: myid });
+      const inviter = await users.findOne({ _id:Id._id});
       const invitedUser = await users.findOne({ _id: userid });
       if (!inviter || !invitedUser) {
         throw new Error('No user found');
@@ -58,7 +59,7 @@ const sendInvite = async (req, res, next) => {
       // Send immediate response to the client
       res.status(200).json({ message: 'Invitation sent successfully.' });
       // Start background task
-      handleInvitationResponse(userid, myid, generatedToken, inviter, invitedUser);
+      handleInvitationResponse(userid, Id._id, generatedToken, inviter, invitedUser);
 
   } catch (err) {
       next(err);
@@ -120,7 +121,7 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
 
 
 // const sendInvite = async (req, res, next) => {
-//     const { userid, myid } = req.body;
+//     const { userid, Id._id } = req.body;
 //     const generatedToken = crypto.randomUUID();
   
 //     try {
@@ -183,9 +184,9 @@ const handleInvitationResponse = async (userid, myid, generatedToken, inviter, i
 // };
 const acceptInvite = async(req,res,next)=>{
   const noteId = req.params.id1
-  const myid = req.params.id2
+  const Id = req.user
   try {
-    const mydetails = await users.findOne({_id:myid})
+    const mydetails = await users.findOne({_id:Id._id})
     const decide = mydetails.notification.find(prev=>prev._id == noteId)
     await users.updateOne({'notification._id':noteId},{$set:{'notification.$.accept':!decide.accept}})
     res.status(200).json({message:'done'})
@@ -195,9 +196,9 @@ const acceptInvite = async(req,res,next)=>{
 }
 const rejectInvite = async(req,res,next)=>{
   const noteId = req.params.id1
-  const myid = req.params.id2
+  const Id = req.user
   try {
-  const mydetails = await users.findOne({_id:myid})
+  const mydetails = await users.findOne({_id:Id._id})
   const decide = mydetails.notification.find(prev=>prev._id == noteId)
   await users.updateOne({'notification._id':noteId},{$set:{'notification.$.reject':!decide.reject}})
   res.status(200).json({message:'done'})
@@ -207,7 +208,6 @@ const rejectInvite = async(req,res,next)=>{
 }
 const searchInvite = async(req,res,next)=>{
   const {id} = req.params
-  console.log(id)
   try {
     const invitedUser = await users.findOne({inviteCode:id})
     console.log(invitedUser)

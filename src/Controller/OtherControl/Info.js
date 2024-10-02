@@ -7,7 +7,8 @@ const path = require('path')
 
 const getUsers = async(req,res,next ) => {
 try {
-    const user = await users.findOne({_id:req.params.id})
+    const Id = req.user
+    const user = await users.findOne({_id:Id._id})
     res.status(200).json(user)   
 } catch (err) {
    next(err) 
@@ -16,22 +17,23 @@ try {
 
 const getMessages = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id1)
-    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id2  )
+    const Id = req.user
+    const user = await users.findById(Id._id)
+    const mymessages = user.chats.filter(prev=> prev.userId == req.params.id )
     res.status(200).json(mymessages[0])   
 } catch (err) {
     next(err) 
 }
 }
 const markAsRead = async(req,res,next ) => {
-    const { userId, contactId } = req.body;
 try {
+    const Id = req.user
+    const { contactId } = req.body;
     const user = await users.findOneAndUpdate(
-        { _id: userId, 'chats.userId': contactId },
+        { _id: Id._id, 'chats.userId': contactId },
         { $set: { 'chats.$.messages.$[].read': true } }, // Update all messages read status to true
         { new: true }
       );
-  
       if (!user) {
         throw new Error('No user found') 
       }
@@ -43,7 +45,8 @@ try {
 
 const getNotification = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id)
+    const Id = req.user
+    const user = await users.findById(Id._id)
     const notifications = user.notification
     res.status(200).json({message:notifications})   
 } catch (err) {
@@ -52,7 +55,8 @@ try {
 }
 const getCustomers = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id)
+    const Id = req.user
+    const user = await users.findById(Id._id)
     const customers = user.chats
     res.status(200).json(customers)   
 } catch (err) {
@@ -61,7 +65,8 @@ try {
 }
 const getChats = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id)
+    const Id = req.user
+    const user = await users.findById(Id._id)
     const chat = user.chats.filter(prev=>prev.messages.length>0)
     res.status(200).json(chat)   
 } catch (err) {
@@ -70,7 +75,8 @@ try {
 }
 const getHistory = async(req,res,next ) => {
 try {
-    const user = await users.findById(req.params.id)
+    const Id = req.user
+    const user = await users.findById(Id._id)
     const history = user.transaction
     res.status(200).json(history)   
 } catch (err) {

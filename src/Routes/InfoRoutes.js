@@ -3,13 +3,13 @@ const route = express.Router();
 const upload = require('../Utils/Multer')
 const {getUsers,markAsRead,getMessages,postPfp,getNotification,getHistory,getCustomers,getChats} = require("../Controller/OtherControl/Info")
 
-route.route("/getusers/:id").get(getUsers);
-route.route("/getNotes/:id").get(getNotification);
-route.route("/getHistory/:id").get(getHistory);
-route.route("/getChats/:id").get(getChats);
+route.route("/getusers").get(getUsers);
+route.route("/getNotes").get(getNotification);
+route.route("/getHistory").get(getHistory);
+route.route("/getChats").get(getChats);
 route.route("/markAsRead").put(markAsRead);
-route.route("/getCustom/:id").get(getCustomers);
-route.route("/getmessages/:id1/:id2").get(getMessages);
+route.route("/getCustom").get(getCustomers);
+route.route("/getmessages/:id").get(getMessages);
 route.route("/getPfp").post(upload.single('image'),postPfp);
 
 module.exports = route;

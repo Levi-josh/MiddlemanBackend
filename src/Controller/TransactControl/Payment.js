@@ -13,13 +13,14 @@ const searchWallet = async(req,res,next)=>{
     }
   }
 const deposit = async(req,res,next)=>{
-    const {amount,userId} = req.body
+    const Id = req.user
+    const {amount} = req.body
     try {
-      const seachedUser = await users.findOne({_id:userId})
+      const seachedUser = await users.findOne({_id:Id._id})
       if(!seachedUser){
         throw new Error('No user found')
       }
-      await users.updateOne({ _id: userId }, { $inc: { balance: amount } });
+      await users.updateOne({ _id: Id._id }, { $inc: { balance: amount } });
       res.status(200).json({message:'deposited'})
     } catch (err) {
       next(err)
@@ -49,9 +50,10 @@ const deposit = async(req,res,next)=>{
 //   }
 // }
 const makePayment = async (req, res, next) => {
-  const { amount, userId, recipientId } = req.body;
+  const Id = req.user
+  const { amount, recipientId } = req.body;
   try {
-      const sender = await users.findOne({ _id: userId });
+      const sender = await users.findOne({ _id: Id._id });
       const enoughFund = sender.balance>amount
       if(!enoughFund){
         throw new Error('Insufficient balance!') 
@@ -60,19 +62,19 @@ const makePayment = async (req, res, next) => {
       if (!receiver) {
         throw new Error('No user found')
       }
-      const hasDeal = receiver.transaction.find(prev => prev.transactionWith == userId);
+      const hasDeal = receiver.transaction.find(prev => prev.transactionWith == Id._id);
       if (!hasDeal) {
           await users.updateOne({ _id: recipientId }, { $inc: { balance:receiver.balance + amount } });
-          await users.updateOne({ _id:userId }, { $inc: { balance:sender.balance - amount } });
+          await users.updateOne({ _id:Id._id }, { $inc: { balance:sender.balance - amount } });
       }
       await users.updateOne({ _id: recipientId }, { $inc: { pending:receiver.pending + amount } });
-      await users.updateOne({ _id:userId }, { $inc: { balance:sender.balance - amount } });
+      await users.updateOne({ _id:Id._id }, { $inc: { balance:sender.balance - amount } });
 
       // Polling function to check for transaction completion
       const pollForCompletion = async () => {
           while (true) {
               const updatedReceiver = await users.findOne({ _id: recipientId });
-              const updatedDeal = updatedReceiver.transaction.find(prev => prev.transactionWith == userId);
+              const updatedDeal = updatedReceiver.transaction.find(prev => prev.transactionWith == Id._id);
               if (updatedDeal && updatedDeal.completed) {
                   await users.updateOne({ _id: recipientId }, { $inc: { balance:updatedReceiver.balance + amount, pending:updatedReceiver.pending - amount } });
                   return { message: 'Payment completed and balance updated' };

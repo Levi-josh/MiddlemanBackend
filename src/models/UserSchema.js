@@ -63,8 +63,13 @@ socketId:String,
 username: String,
 password: {
     type: String,
-    required: [true, 'Enter a password'],
-   
+    required: function() {
+      return !this.googleId; // Require password only if googleId is not present
+}},
+googleId: { 
+    type: String,
+    unique: true,  // Must be unique for OAuth users
+    sparse: true,  // Allows multiple users to have `null` googleId (for regular users)
 },
 chats:[chatSchema],
 balance:Number,

@@ -13,23 +13,41 @@ const infoRoutes = require('./Routes/InfoRoutes')
 const jwtRoutes = require('./Routes/JwtRoutes')
 const paymentRoutes = require('./Routes/PaymentRoute')
 const http = require('http')
+const cookieParser = require('cookie-parser');
 const server = http.createServer(App);
 const handleSocketIO = require('./Utils/Chat');
+// const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
+const MongoStore = require('connect-mongo');
 const errorhandler = require('./Middleware/Error')
-
+const jwtMiddleware = require('./Middleware/JwtMiddleware')
 App.use(cors({
     origin:['http://localhost:5173','https://middlemanapp-nc5k.onrender.com'],
     methods:['GET', 'POST', 'PUT', 'DELETE'], // Specify the methods you want to allow
     credentials: true,
 }))
+// App.use(session({
+//     secret: 'your-secret-key',  // Replace with a strong secret key
+//     resave: false,
+//     saveUninitialized: true,
+//     store: MongoStore.create({
+//       mongoUrl: process.env.Database,  // Use your MongoDB URI
+//       collectionName: 'sessions', // Name of the collection in MongoDB
+//     }),
+//     cookie: {
+//       maxAge: 1000 * 60 * 60 * 24 // Session will last for 1 day
+//     }
+//   }));
 App.use(express.json())
 App.use(bodyparser.json())
+App.use(cookieParser());
 App.use(passport.initialize());
+// App.use(passport.session());
 App.use(oauthRoutes)
 App.use(jwtRoutes)
 App.use(otpRoutes)
+App.use(jwtMiddleware)
 App.use(inviteRoutes)
 App.use(infoRoutes)
 App.use(paymentRoutes)

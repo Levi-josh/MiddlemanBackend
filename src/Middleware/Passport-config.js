@@ -1,26 +1,57 @@
 // Import required modules
 const passport = require('passport');
-const OAuth2Strategy = require('passport-oauth2').Strategy;
+const OAuth2Strategy = require('passport-google-oauth20').Strategy;
+const users = require('../models/UserSchema')
 
 passport.use('google', new OAuth2Strategy ({
-  clientID: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
     callbackURL: 'http://localhost:3500/auth/google/callback',
-    authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
-    tokenURL: 'https://accounts.google.com/o/oauth2/token'
   },
-  function(accessToken, refreshToken, profile, done) {
-    console.log('OAuth Callback Triggered');
-    console.log(accessToken)
-    console.log(refreshToken)
-    console.log(profile)
-    // OAuth callback logic
-    // This function is called after the user authorizes access
-    // You can handle the user's profile data here
-    // For example, save the profile to your database or create a new user account
-    // Call the `done` callback to indicate success and pass the user's profile
-    done(null, profile);
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Check if the user already exists
+      let user = await users.findOne({ email: profile.emails[0].value });
+     
+      if (user) {
+        if (!user.googleId) {
+         await users.updateOne({ email: profile.emails[0].value },{$set:{googleId:profile.id}})
+        }
+        return done(null, user);
+      }else{
+      const userData = {
+        googleId: profile.id,
+        email: profile.emails[0].value,
+        profilePic: profile.photos[0].value,
+        username: profile.displayName,
+        socketId:'',
+        chats:[],
+        balance:1000,
+        pending:0,
+        inviteCode:'',
+        walletId:'',
+        notification:[],
+        history:[],
+        };
+        const newUser = await users.create(userData);
+        return done(null, newUser);
+      }
+    } catch (err) {
+      return done(err, false);
+    }
   }
 ));
+passport.serializeUser((user, done) => {
+  done(null, user._id);  // Serialize only the user ID
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await users.findById(id);  // Find the user by ID
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 module.exports = passport;
