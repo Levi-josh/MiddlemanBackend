@@ -6,7 +6,7 @@ const users = require('../models/UserSchema')
 passport.use('google', new OAuth2Strategy ({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: 'https://middlemanbackend.onrender.com/auth/google/callback',
+    callbackURL: 'http://localhost:3500/auth/google/callback',
   },
   async (accessToken, refreshToken, profile, done) => {
     try {

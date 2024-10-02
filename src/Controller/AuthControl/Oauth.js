@@ -1,5 +1,4 @@
 const passport = require('passport');
-const isProduction = process.env.NODE_ENV === 'production';
 const jwt = require('jsonwebtoken')
 // const { ObjectId } = require('mongodb')
 // const mongoose = require('mongoose');
@@ -24,7 +23,7 @@ const jwtAuth = async (req, res) => {
       process.env.Access_Token,
       { expiresIn: '1d' }
     );
-    res.cookie('jwt', token, {  httpOnly: true,secure: isProduction, maxAge: 1000 * 60 * 60 * 24  });
+    res.cookie('jwt', token, {  httpOnly: true, maxAge: 1000 * 60 * 60 * 24  });
     res.redirect('http://localhost:5173/');  // Redirect to your SPA client with JWT
   } 
 

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const users = require('../../models/UserSchema')
-const isProduction = process.env.NODE_ENV === 'production';
+
 const login = async (req, res, next) => {
     const {email,password} = req.body;
     try {
@@ -15,7 +15,7 @@ const login = async (req, res, next) => {
             const hash = await bcrypt.compare(password,user.password)
             if (hash) {
                 const token= jwt.sign({ _id: user._id }, process.env.Access_Token,{ expiresIn: '1d' })
-                res.cookie('jwt', token, {   httpOnly: true,secure: isProduction, maxAge: 1000 * 60 * 60 * 24 });
+                res.cookie('jwt', token, {   httpOnly: true, maxAge: 1000 * 60 * 60 * 24 });
                 res.status(200).json({'Accesss_Token':newjwt,'UserId':user._id})
                 
             } else {
