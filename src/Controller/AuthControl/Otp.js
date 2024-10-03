@@ -79,7 +79,7 @@ const verifyOtp = async (req, res,next) => {
       // OTP is valid, so respond with success and delete the OTP entry from the database
       await otpUsers.deleteOne({ otp: otpData.otp });
       const newjwt = jwt.sign({ _id: newUser._id }, process.env.Access_Token, { expiresIn: '1d' })
-      res.cookie('jwt', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 });
+      res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
       res.status(200).json({'Accesss_Token':newjwt,'UserId':newUser._id})
     } catch (err) {
       next(err);

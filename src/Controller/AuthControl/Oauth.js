@@ -23,7 +23,7 @@ const jwtAuth = async (req, res) => {
       process.env.Access_Token,
       { expiresIn: '1d' }
     );
-    res.cookie('jwt', token, {  httpOnly: true, maxAge: 1000 * 60 * 60 * 24  });
+    res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
     res.redirect('http://localhost:5173/');  // Redirect to your SPA client with JWT
   } 
 
