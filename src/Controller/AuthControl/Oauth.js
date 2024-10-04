@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 const authCallback = (req, res, next) => {
   passport.authenticate('google', { session: false }, (err, user, info) => {
     if (err || !user) {
-      res.redirect('http://localhost:5173/landingPage'); // Failure redirect
+      res.redirect('https://middlemanapp-nc5k.onrender.com/landingPage'); // Failure redirect
     }
     req.user = user; // Attach user to request object
     next(); // Pass to the next middleware, which will be `jwtAuth`
@@ -24,7 +24,7 @@ const jwtAuth = async (req, res) => {
       { expiresIn: '1d' }
     );
     res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
-    res.redirect('http://localhost:5173/');  // Redirect to your SPA client with JWT
+    res.redirect('https://middlemanapp-nc5k.onrender.com/');  // Redirect to your SPA client with JWT
   } 
 
 module.exports = {
