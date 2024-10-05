@@ -2,6 +2,7 @@
 const passport = require('passport');
 const OAuth2Strategy = require('passport-google-oauth20').Strategy;
 const users = require('../models/UserSchema')
+const crypto = require('crypto');
 
 passport.use('google', new OAuth2Strategy ({
     clientID: process.env.CLIENT_ID,
@@ -28,8 +29,8 @@ passport.use('google', new OAuth2Strategy ({
         chats:[],
         balance:1000,
         pending:0,
-        inviteCode:'',
-        walletId:'',
+        walletId:crypto.randomUUID(),
+        inviteCode:crypto.randomUUID(),
         notification:[],
         history:[],
         };
