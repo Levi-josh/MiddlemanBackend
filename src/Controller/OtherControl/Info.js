@@ -84,7 +84,8 @@ try {
 }
 }
 const postPfp= async (req, res, next) => { 
-    const{id,username} = req.body; 
+    const{username} = req.body; 
+    const id = req.user
     if (!req.file) {
       throw new Error('No file uploaded');
       }

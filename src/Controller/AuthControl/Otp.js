@@ -76,7 +76,6 @@ const verifyOtp = async (req, res,next) => {
         history:[],
         };
       const newUser = await users.create(userData)
-      // OTP is valid, so respond with success and delete the OTP entry from the database
       await otpUsers.deleteOne({ otp: otpData.otp });
       const newjwt = jwt.sign({ _id: newUser._id }, process.env.Access_Token, { expiresIn: '1d' })
       res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });

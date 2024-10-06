@@ -16,7 +16,7 @@ const login = async (req, res, next) => {
             if (hash) {
                 const token= jwt.sign({ _id: user._id }, process.env.Access_Token,{ expiresIn: '1d' })
                 res.cookie('jwt', token, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
-                res.status(200).json({'Accesss_Token':newjwt,'UserId':user._id})
+                res.status(200).json({'UserId':user._id})
                 
             } else {
                 throw new Error('Incorrect password')
@@ -29,17 +29,15 @@ const login = async (req, res, next) => {
     }
 }
 const checkAuth =  (req, res,next) => {
-    const token = req?.cookies?.jwt; // Assuming you're using a cookie named 'token'
+    const token = req?.cookies?.jwt;
     if (!token) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
     try {
-      
       jwt.verify(token, process.env.Access_Token, (err, decoded) => {
         if (err) {
           return res.status(403).json({ message: 'Invalid or expired token' });
         }
-        console.log(`decoded:${decoded._id}`)
         res.status(200).json({Id:decoded._id});
       }) 
     } catch (err) {
