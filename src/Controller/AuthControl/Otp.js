@@ -78,7 +78,7 @@ const verifyOtp = async (req, res,next) => {
       const newUser = await users.create(userData)
       await otpUsers.deleteOne({ otp: otpData.otp });
       const token = jwt.sign({ _id: newUser._id }, process.env.Access_Token, { expiresIn: '1d' })
-      res.cookie('jwt', token, { secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
+      res.cookie('jwt', token, { httpOnly:true,secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
       res.status(200).json({'UserId':newUser._id})
     } catch (err) {
       next(err);
