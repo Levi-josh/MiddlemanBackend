@@ -1,7 +1,6 @@
 const socketIO = require('socket.io');
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb')
-const transporter = require('../../Middleware/Nodemailer')
 const user = require('../models/UserSchema'); // Assuming this is the Mongoose model
 const updateMessages = async (id, details) => {
   try {
