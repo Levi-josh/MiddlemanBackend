@@ -47,7 +47,7 @@ App.use(passport.initialize());
 App.use(oauthRoutes)
 App.use(jwtRoutes)
 App.use(otpRoutes)
-App.use(jwtMiddleware)
+// App.use(jwtMiddleware)
 App.use(inviteRoutes)
 App.use(infoRoutes)
 App.use(paymentRoutes)
