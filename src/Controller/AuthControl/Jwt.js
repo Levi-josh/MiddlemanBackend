@@ -16,8 +16,7 @@ const login = async (req, res, next) => {
             if (hash) {
                 const token= jwt.sign({ _id: user._id }, process.env.Access_Token,{ expiresIn: '1d' })
                 res.cookie('jwt', token, {httpOnly: true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
-                res.status(200).json({'UserId':user._id,'token':token})
-                
+                res.status(200).json({'UserId':user._id,'token':token})     
             } else {
                 throw new Error('Incorrect password')
             }
