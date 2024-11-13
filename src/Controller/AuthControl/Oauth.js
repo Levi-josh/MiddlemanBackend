@@ -25,7 +25,7 @@ const jwtAuth = async (req, res) => {
     );
    
     res.cookie('jwt', token, {httpOnly:true, secure: true, sameSite: 'None', maxAge: 1000 * 60 * 60 * 24 });
-    res.redirect(`https://middlemanapp-nc5k.onrender.com/?Userid=${user._id}token=${token}`);  // Redirect to your SPA client with JWT
+    res.redirect(`https://middlemanapp-nc5k.onrender.com/?Userid=${user._id}&token=${token}`);  // Redirect to your SPA client with JWT
   } 
 
 module.exports = {
